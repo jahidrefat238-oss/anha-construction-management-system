@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anhaa Construction Services — Site &amp; Ledger Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- AUTH SCREEN: LOGIN / REGISTER -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-card">
+            <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:6px;">
+                <img src="logo.png" alt="Anhaa Construction Services" style="height:66px; width:auto; margin-bottom:8px;">
+            </div>
+            <p class="auth-subtitle">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ</p>
+<hr>
+            <!-- <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="tabLoginBtn" onclick="showAuthTab('login')">Login</button>
+                <button type="button" class="auth-tab" id="tabRegisterBtn" onclick="showAuthTab('register')">Register</button>
+            </div> -->
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username or Gmail</label>
+                    <input type="text" id="loginIdentifier" placeholder="Enter username or Gmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-field">
+                        <input type="password" id="loginPassword" placeholder="Enter password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">SHOW</button>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="loginSubmitBtn">Login</button>
+                <p class="auth-switch">Don't have an account? <span onclick="showAuthTab('register')">Register</span></p>
+                <!-- <p class="auth-hint">Demo login &mdash; Username: <b>admin</b>, Password: <b>admin123</b></p> -->
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" class="auth-form" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label>Gmail</label>
+                    <input type="email" id="regGmail" placeholder="you@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="Enter phone number" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="password-field">
+                            <input type="password" id="regPassword" placeholder="Create password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)">SHOW</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <div class="password-field">
+                            <input type="password" id="regConfirmPassword" placeholder="Repeat password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('regConfirmPassword', this)">SHOW</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Create Account</button>
+                <p class="auth-switch">Already have an account? <span onclick="showAuthTab('login')">Login</span></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN SOFTWARE APP (shown after login) -->
+    <div id="appContainer" class="layout" style="display:none;">
+
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-brand">
+            <img src="logo.png" alt="Anhaa Construction Services" class="sidebar-brand-logo">
+            <span class="sidebar-close-btn" onclick="closeSidebar()">&times;</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            
+
+            <div class="sidebar-section-label">Project Management</div>
+            <button class="sidebar-link" onclick="closeSidebar(); openAddProjectModal();">
+                Add New Project
+            </button>
+            <button class="sidebar-link" onclick="closeSidebar(); openPerProjectIncomeModal();">
+                All Projects
+            </button>
+
+            <div class="sidebar-section-label">Client</div>
+            <button class="sidebar-link" onclick="closeSidebar(); openClientModal(false);">
+                Client Management
+            </button>
+
+            <div class="sidebar-section-label">Finance</div>
+            <button class="sidebar-link" onclick="closeSidebar(); openTransactionModal('Receive');">
+                Bill Receive (Revenue)
+            </button>
+            <button class="sidebar-link" onclick="closeSidebar(); openTransactionModal('Pay');">
+                Bill Pay (Expenses)
+            </button>
+
+            <div class="sidebar-section-label">Employee</div>
+            <button class="sidebar-link" onclick="closeSidebar(); openEmployeeModal(false);">
+                Employee Management
+            </button>
+
+            <div class="sidebar-section-label">Reports</div>
+            <button class="sidebar-link" onclick="closeSidebar(); openReportsModal('revenue');">
+                Revenue Report
+            </button>
+            <button class="sidebar-link" onclick="closeSidebar(); openReportsModal('expense');">
+                Expense Report
+            </button>
+            <button class="sidebar-link" onclick="closeSidebar(); openReportsModal('profit');">
+                Profit Report
+            </button>
+        </nav>
+
+        <div class="sidebar-section-label" style="padding-top:6px;">Account</div>
+        <button class="sidebar-link sidebar-logout" onclick="handleLogout()">
+            Logout
+        </button>
+    </aside>
+
+    <div id="mainWrapper" class="main-wrapper">
+        <!-- TOP HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+                    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                </button>
+                <img src="logo.png" alt="Anhaa Construction Services" class="header-brand-logo">
+                <h3 >Anhaa Construction Service</h3>
+            </div>
+            <div class="header-right">
+                <div class="profile-wrap">
+                    <button class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar" id="headerAvatar">A</div>
+                        <div class="profile-meta">
+                            <div class="profile-name" id="headerProfileName">Admin</div>
+                        </div>
+                        <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <button onclick="toggleProfileMenu(); goHome();">
+                            <svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>
+                            Dashboard
+                        </button>
+                        <button class="logout-option" onclick="toggleProfileMenu(); handleLogout();">
+                            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            <div class="page-heading">
+                <div>
+                    <h1>Dashboard</h1>
+                </div>
+                
+            </div>
+
+            <div class="dashboard">
+                <div class="card card-blue" onclick="openEmployeeModal(false)">
+                    <div class="card-body">
+                        <h3>Total Employees</h3>
+                        <div class="value"><span id="dash-employees-count">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openEmployeeModal(false);">More Info <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-green" onclick="openPerProjectIncomeModal()">
+                    <div class="card-body">
+                        <h3>Total Projects</h3>
+                        <div class="value"><span id="dash-projects-count">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openPerProjectIncomeModal();">More Info <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-orange" onclick="openPerProjectIncomeModal()">
+                    <div class="card-body">
+                        <h3>Running Projects</h3>
+                        <div class="value"><span id="dash-running-projects-count">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openPerProjectIncomeModal();">More Info <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-purple" onclick="openTotalCompleteProjectModal()">
+                    <div class="card-body">
+                        <h3>Completed Projects</h3>
+                        <div class="value"><span id="dash-complete-projects-count">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openTotalCompleteProjectModal();">More Info <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-cyan" onclick="openTransactionModal('Receive')">
+                    <div class="card-body">
+                        <h3>Bill Receive</h3>
+                        <div class="sub">Current Status</div>
+                        <div class="value">৳ <span id="dash-receive">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openTransactionModal('Receive');">Click to View <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-amber" onclick="openTransactionModal('Pay')">
+                    <div class="card-body">
+                        <h3>Bill Pay</h3>
+                        <div class="sub">Information of All Expenses...</div>
+                        <div class="value">৳ <span id="dash-pay">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openTransactionModal('Pay');">Click to View <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+
+                <div class="card card-lime" onclick="openReportsModal('profit')">
+                    <div class="card-body">
+                        <h3>Net Profit</h3>
+                        <div class="sub">Financial Summary</div>
+                        <div class="value">৳ <span id="dash-net-profit">0</span></div>
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation(); openReportsModal('profit');">Click to View <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+            </div>
+        </main></main>
+
+        <!-- FOOTER ADDRESS BAR -->
+        <footer class="footer">
+            <div class="footer-info">
+                <span><strong>Email:</strong> contact@anhaaconstruction.com</span>
+                <span><strong>Phone:</strong> +880 1877984543</span>
+                <span><strong>Location:</strong> Dhaka, Bangladesh</span>
+            </div>
+            <div class="copyright">&copy; 2026 Anhaa Construction Services. All rights reserved.</div>
+        </footer>
+    </div><!-- /#mainWrapper -->
+
+    <!-- TRANSACTION MODAL -->
+    <div id="transactionModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('transactionModal')">&times;</span>
+            <h2 id="transactionModalTitle" style="margin-bottom: 20px;">Bill Entry</h2>
+            <form id="transactionForm">
+                <input type="hidden" id="transId">
+                <input type="hidden" id="transType">
+                <div class="form-group">
+                    <label>Select Date</label>
+                    <input type="date" id="transDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Running Project</label>
+                    <select id="transProject" required></select>
+                </div>
+
+                <div class="purpose-box">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Additional Notes</label>
+                        <textarea id="transPurposeNotes" rows="2" placeholder="Describe context details..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Amount (৳)</label>
+                    <input type="number" id="transAmount" required min="1">
+                </div>
+                <button type="submit" class="submit-btn">Save Bill</button>
+                <button type="button" id="transactionCancelBtn" class="submit-btn" style="display:none; background:var(--steel); margin-top:8px;" onclick="cancelTransactionEdit()">Cancel Edit</button>
+            </form>
+
+            <h4 id="transactionHistoryTitle" style="margin-top: 22px; font-family:var(--font-display); font-size:14.5px;">Bill Records</h4>
+            <div id="transactionHistoryList" style="margin-top: 10px; max-height: 260px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <!-- PER PROJECT INCOME & MANAGEMENT MODAL -->
+    <div id="addProjectModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('addProjectModal')">&times;</span>
+            <h2 id="projectFormTitle">Add New Project</h2>
+            <p style="font-size: 13px; color: var(--steel); margin-bottom: 15px;">Fill in the project details below.</p>
+
+            <div id="projectFormBox">
+                <form id="projectForm" onsubmit="saveProject(event)">
+                    <input type="hidden" id="editProjectId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project Name</label>
+                            <input type="text" id="projName" placeholder="e.g., Project Alpha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Work Type</label>
+                            <select id="projWorkType" required>
+                                <option value="Road">Road</option>
+                                <option value="Bridge">Bridge</option>
+                                <option value="Piling">Piling</option>
+                                <option value="Building">Building</option>
+                                <option value="Renovation">Renovation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <select id="clientId" required>
+                            <option value="">Select Client</option>
+                        </select>
+                        <small style="display:block; margin-top:5px; color:var(--steel);">
+                            Client information is managed separately according to the final ERD.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>Budget (৳)</label>
+                        <input type="number" id="projTotalCost" min="0" placeholder="Project budget" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Location</label>
+                        <input type="text" id="projLocation" placeholder="Site / area of the project" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="projDate" required>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button type="submit" id="projectSubmitBtn" class="submit-btn">Add Project</button>
+                        <button type="button" id="projectCancelBtn" onclick="cancelProjectEdit(); closeModal('addProjectModal'); openPerProjectIncomeModal();" style="display:none; padding:0 20px; background:var(--steel-light); color:var(--steel); border:none; border-radius:8px; cursor:pointer; font-weight:600; white-space:nowrap;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <p style="text-align:center; margin-top:18px;">
+                <span class="clickable-item" style="font-size:13px;" onclick="closeModal('addProjectModal'); openPerProjectIncomeModal();">View All Projects →</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- PER PROJECT INCOME (LIST ONLY) MODAL -->
+    <div id="perProjectModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('perProjectModal')">&times;</span>
+            <div>
+                <h2>Per Project Income & Balance</h2>
+                <p style="font-size: 13px; color: var(--steel); margin-bottom: 15px;">Click a project name to view detailed statements or mark it done.</p>
+            </div>
+
+            <ul id="projectList" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- PROJECT DETAILS MODAL -->
+    <div id="detailsModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('detailsModal')">&times;</span>
+            <h2 id="detailsProjectName">Project Name</h2>
+            <p id="detailsStatus" style="font-weight:600; margin: 5px 0 15px; color: var(--blue); font-size:13px;"></p>
+
+            <div id="detailsInfo" style="font-size:13.5px; background:var(--white); border:1px solid var(--border); padding:14px; border-radius:8px; line-height:1.9;"></div>
+
+            <div style="text-align:right; margin-top:8px;">
+                <button class="action-btn edit-btn" id="detailsEditProjectBtn" style="margin-left:0;">Edit Project Details</button>
+            </div>
+
+            <div id="detailsCalculations" style="margin: 15px 0; font-size:15px; font-family:var(--font-mono); background:var(--paper); padding:14px; border-radius:8px; line-height:1.8;"></div>
+
+            <h4 style="font-family:var(--font-display); font-size:14.5px; margin-top:20px;">Transaction History & Purposes</h4>
+            <div id="detailsHistory" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+
+            <div id="projectDoneContainer"></div>
+        </div>
+    </div>
+
+    <!-- TOTAL COMPLETE PROJECT MODAL -->
+    <div id="totalCompleteProjectModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('totalCompleteProjectModal')">&times;</span>
+            <h2>Total Complete Project</h2>
+            <div style="margin: 15px 0; font-size: 19px; font-weight: 700; font-family:var(--font-mono); color: var(--green);">
+                Total Completed: <span id="modalCompleteProjectsCount">0</span> Projects
+            </div>
+            <h4 style="margin-top:20px; font-family:var(--font-display); font-size:14.5px;">Completed Projects Statements</h4>
+            <p style="font-size:12px; color:var(--steel); margin-bottom:10px;">Click any project below to see its complete historical collection logs (Receive & Pay).</p>
+            <ul id="completedProjectsList" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- CLIENT MANAGEMENT MODAL -->
+    <div id="clientModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('clientModal')">&times;</span>
+            <h2>Clients Management</h2>
+            <hr style="margin: 15px 0;">
+
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <input type="hidden" id="editClientId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="clientName" placeholder="Enter client name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="clientPhone" placeholder="Enter phone" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="clientAddress" placeholder="Enter address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="clientEmail" placeholder="Enter email">
+                    </div>
+                </div>
+                <button type="submit" id="clientSubmitBtn" class="submit-btn">Add Client</button>
+            </form>
+
+            <h4 style="margin-top:25px; font-family:var(--font-display); font-size:14.5px;">Client List</h4>
+            <div id="clientListDisplay" style="margin-top:10px; max-height:250px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- EMPLOYEE MANAGEMENT MODAL -->
+    <div id="employeeModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('employeeModal')">&times;</span>
+            <h2>Employees Management</h2>
+            <hr style="margin: 15px 0;">
+
+            <div id="employeeFormContainer">
+                <h4 id="employeeFormTitle" style="font-family:var(--font-display); font-size:14.5px; margin-bottom:10px;">Add New Employee</h4>
+                <form id="employeeForm" onsubmit="saveEmployee(event)">
+                    <input type="hidden" id="editEmpId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employee Name</label>
+                            <input type="text" id="empName" placeholder="Enter name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="empPhone" placeholder="Enter phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Employee Address</label>
+                        <input type="text" id="empAddress" placeholder="Enter address">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employee Type</label>
+                            <select id="empPost" required>
+                                <option value="Worker">Worker</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Engineer">Engineer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Salary Basis</label>
+                            <select id="empSalaryType" required>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Daily">Daily</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (৳)</label>
+                            <input type="number" id="empSalary" placeholder="Amount" min="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="employeeSubmitBtn" class="submit-btn">Submit Data</button>
+                </form>
+            </div>
+
+            <h4 style="margin-top: 25px; font-family:var(--font-display); font-size:14.5px;">Employee List & Assignments</h4>
+            <div id="employeeListDisplay" style="margin-top: 10px; max-height: 250px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <!-- REPORTS MODAL -->
+    <div id="reportsModal" class="modal" onclick="if(event.target===this) this.style.display='none';">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('reportsModal')">&times;</span>
+            <h2>Reports</h2>
+            <p style="font-size: 13px; color: var(--steel); margin-bottom: 15px;">Revenue, expense and profit summary across all projects.</p>
+
+            <div class="auth-tabs" style="margin-bottom:18px;">
+                <button type="button" class="auth-tab" id="reportTabRevenue" onclick="openReportsModal('revenue')">Revenue</button>
+                <button type="button" class="auth-tab" id="reportTabExpense" onclick="openReportsModal('expense')">Expense</button>
+                <button type="button" class="auth-tab" id="reportTabProfit" onclick="openReportsModal('profit')">Profit</button>
+            </div>
+
+            <div id="reportSummaryBox" style="margin-bottom:15px; font-size:19px; font-weight:700; font-family:var(--font-mono);"></div>
+            <div id="reportListDisplay" style="max-height:320px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    </div><!-- /#appContainer -->
+
+    <div id="toastContainer"></div>
+
+    
+<script src="script.js?v=2"></script>
+</body>
+</html>
